@@ -1,0 +1,59 @@
+version: 2
+
+references:
+  container_config: &container_config
+    docker:
+      - image: circleci/golang:latest
+    working_directory: /go/src/project_dir
+  create_aws_credentials: &create_aws_credentials
+    run:
+      name: create-aws-credentials
+      command: |
+        mkdir ~/.aws
+        touch ~/.aws/config
+        chmod 600 ~/.aws/config
+        echo "[profile eb-cli]" > ~/.aws/config
+        echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/config
+        echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/config
+  install_deploy_dependencies: &install_deploy_dependencies
+    run:
+      name: install-deploy-dependencies
+      command: |
+        sudo apt-get -y -qq update
+        sudo apt-get install python-pip python-dev build-essential
+        sudo pip install awsebcli --upgrade
+  eb_deploy: &eb_deploy
+    run:
+      name: eb-deploy
+      command: eb deploy
+
+jobs:
+  deploy_develop:
+    <<: *container_config
+    steps:
+      - checkout
+      - *create_aws_credentials
+      - *install_deploy_dependencies
+      - *eb_deploy
+  deploy_master:
+    <<: *container_config
+    steps:
+      - checkout
+      - *create_aws_credentials
+      - *install_deploy_dependencies
+      - *eb_deploy
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - deploy_develop:
+          filters:
+            branches:
+              only:
+                - develop
+      - deploy_master:
+          filters:
+            branches:
+              only:
+                - master

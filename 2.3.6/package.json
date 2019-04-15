@@ -1,0 +1,23 @@
+{
+  ...
+  "scripts": {
+    "test": "node ./node_modules/jest/bin/jest.js",
+    "test:watch": "node ./node_modules/jest/bin/jest.js --watchAll",
+    "publish:development": "expo publish --release-channel development --config app.development.json",
+    "publish:production": "expo publish --release-channel production --config app.production.json",
+    "ios:development": "npm-run-all -s ios:development:*",
+    "ios:development:build": "expo build:ios --release-channel development --config app.development.json",
+    "ios:development:file": "mkdir -p .build && wget \"$(expo url:ipa)\" -O .build/app.ipa",
+    "ios:production": "npm-run-all -s ios:production:*",
+    "ios:production:build": "expo build:ios --release-channel production --config app.production.json",
+    "ios:production:file": "mkdir -p .build && wget \"$(expo url:ipa)\" -O .build/app.ipa",
+    "android:development": "npm-run-all -s android:development:*",
+    "android:development:build": "expo build:android --release-channel development --config app.development.json",
+    "android:development:file": "mkdir -p .build && wget \"$(expo url:apk)\" -O .build/app.apk",
+    "android:production": "npm-run-all -s android:production:*",
+    "android:production:build": "expo build:android --release-channel production --config app.production.json",
+    "android:production:file": "mkdir -p .build && wget \"$(expo url:apk)\" -O .build/app.apk",
+    "fastlane:ios": "PILOT_IPA=${PWD/.build/app.ipa fastlane pilot upload"
+  },
+  ...
+}

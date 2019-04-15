@@ -1,0 +1,40 @@
+version: '2'
+
+services:
+  app:
+    image: 'golang:latest'
+    container_name: 'api-local.project'
+    working_dir: '/go/src/project_dir'
+    environment:
+      APP_ENV: 'local'
+    volumes:
+      - 'data:/go'
+      - './src:/go/src'
+    ports:
+      - '3000:8080'
+    command: 'go run main.go'
+    links:
+      - mysql
+      - redis
+  mysql:
+    image: 'mysql:5.7'
+    container_name: 'local.mysql.project'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'dbname'
+      MYSQL_USER: 'dbuser'
+      MYSQL_PASSWORD: 'dbpassword'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    command: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci'
+  redis:
+    image: 'redis:3.2.4'
+    container_name: 'local.redis.project'
+    ports:
+      - '6379:6379'
+
+volumes:
+  data:
+    driver: 'local'

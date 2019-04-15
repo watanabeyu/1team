@@ -1,0 +1,12 @@
+branch-defaults:
+  master:
+    environment: master-environment
+  develop:
+    environment: develop-environment
+global:
+  application_name: application_name
+  default_ec2_keyname: ec2_keyname
+  default_platform: 64bit Amazon Linux 2017.09 v2.8.4 running Docker 17.09.1-ce
+  default_region: us-east-1
+  profile: eb-cli
+  sc: git

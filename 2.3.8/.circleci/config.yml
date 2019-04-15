@@ -1,0 +1,92 @@
+version: 2
+
+references:
+  container_config: &container_config
+    docker:
+      - image: circleci/node:latest
+  install_expo_cli: &install_expo_cli
+    run:
+      name: install-expo-cli
+      command: sudo npm install -g expo-cli
+  login_expo_cli: &login_expo_cli
+    run:
+      name: login-expo
+      command: expo login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD --non-interactive
+
+jobs:
+  # npm install and test
+  code_check:
+    <<: *container_config
+    steps:
+      - checkout
+      # npm setting
+      - restore_cache:
+          keys: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-npm-wee
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      # workspace
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+      # test
+      - run:
+          name: test
+          command: npm run test
+
+  # build development
+  development_build:
+    <<: *container_config
+    steps:
+      - checkout
+      # workspace
+      - attach_workspace:
+          at: .
+      # expo
+      - *install_expo_cli
+      - *login_expo_cli
+      # publish
+      - run:
+          name: development build
+          command: npm run publish:development
+
+  # build production
+  production_build:
+    <<: *container_config
+    steps:
+      - checkout
+      # workspace
+      - attach_workspace:
+          at: .
+      # expo
+      - *install_expo_cli
+      - *login_expo_cli
+      # build
+      - run:
+          name: production build
+          command: npm run publish:production
+      
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - code_check
+      - development_build:
+          requires:
+            - code_check
+          filters:
+            branches:
+              only:
+                - develop
+      - production_build:
+          requires:
+            - code_check
+          filters:
+            branches:
+              only:
+                - master

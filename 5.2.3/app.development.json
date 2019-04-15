@@ -1,0 +1,17 @@
+{
+  "expo": {
+    ...
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "expo-qr-notify",
+          "config": {
+            "slack_webhook": "enter_your_slack_incoming_webhook_url",
+            "slack_channel": "#channel",
+            "git_service_token": "enter_your_github_token"
+          }
+        }
+      ]
+    }
+  }
+}
