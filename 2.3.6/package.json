@@ -17,7 +17,7 @@
     "android:production": "npm-run-all -s android:production:*",
     "android:production:build": "expo build:android --release-channel production --config app.production.json",
     "android:production:file": "mkdir -p .build && wget \"$(expo url:apk)\" -O .build/app.apk",
-    "fastlane:ios": "PILOT_IPA=${PWD/.build/app.ipa fastlane pilot upload"
+    "fastlane:ios": "PILOT_IPA=${PWD}/.build/app.ipa fastlane pilot upload"
   },
   ...
 }
